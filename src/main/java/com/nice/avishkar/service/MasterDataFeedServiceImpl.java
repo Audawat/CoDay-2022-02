@@ -19,14 +19,17 @@ public class MasterDataFeedServiceImpl implements MasterDataFeedService {
     }
 
     @Override
-    public Map<String, MasterDataFeed> getAllMasterDataFeed(final Path path) throws IOException {
+    public Map<String, MasterDataFeed> getAllMasterDataFeed(List<String> userIds, final Path path) throws IOException {
         List<String[]> allMasterDataFeed = masterDataFeedDao.getAllMasterDataFeed(path);
         Map<String, MasterDataFeed> masterData = new HashMap<>();
         if( null != allMasterDataFeed ) {
-            allMasterDataFeed.parallelStream().forEach(p -> {
-                MasterDataFeed masterDataFeed = getMasterDataFeed(p);
-
-                masterData.put(masterDataFeed.getId(), masterDataFeed);
+            allMasterDataFeed.stream().forEach(p -> {
+                //System.out.println("Getting Data for: " + p[0]);
+                if(userIds.contains(p[0])) {
+                    MasterDataFeed masterDataFeed = getMasterDataFeed(p);
+                    //System.out.println("Got master data:" + masterDataFeed);
+                    masterData.put(masterDataFeed.getId(), masterDataFeed);
+                }
             });
         } else {
             System.out.println("No Master data found");

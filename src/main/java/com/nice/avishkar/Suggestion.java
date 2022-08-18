@@ -1,5 +1,7 @@
 package com.nice.avishkar;
 
+import java.util.Comparator;
+
 public class Suggestion {
 
 	public String Id;
@@ -48,5 +50,18 @@ public class Suggestion {
 	public String toString() {
 		return "Suggestion [Id=" + Id + ", Score=" + Score + ", Name=" + Name + "]";
 	}
-	
+
+//	@Override
+//	public int compare(final Object o1,
+//					   final Object o2) {
+//		Suggestion suggestion1 = (Suggestion) o1;
+//		Suggestion suggestion2 = (Suggestion) o2;
+//		if (suggestion2.getScore() > suggestion1.getScore()) {
+//			return 1;
+//		} else if (suggestion2.getScore() < suggestion1.getScore()) {
+//			return -1;
+//		} else {
+//			return -suggestion1.getName().compareTo(suggestion2.getName());
+//		}
+//	}
 }

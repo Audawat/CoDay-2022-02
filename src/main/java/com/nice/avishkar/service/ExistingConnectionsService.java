@@ -11,10 +11,10 @@ public interface ExistingConnectionsService {
 //    void getAllExistingConnectionsForUser(Path path,
 //                                          final String id,
 //                                          final int maxConnectionDegree) throws IOException;
-    Map<String, Set<String>> getConnectionsMap(final List<String[]> allExistingConnections);
+    Map<String, Set<String>> getConnectionsMap(final Path existingConnectionsFilePath) throws IOException;
     Set<String> getPossibleFriendsSuggestion(final String id,
                                              final int maxConnectionDegree,
-                                             final Map<String, Set<String>> connectionsMap);
+                                             final Path existingConnectionsFilePath) throws IOException;
 
 
 }

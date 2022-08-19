@@ -71,7 +71,6 @@ public class FriendsSuggestionServiceImpl implements FriendsSuggestionService {
                                              final Map<String, MasterDataFeed> allMasterDataFeed) {
         possibleFriends.forEach(friend -> {
             MasterDataFeed friendData = allMasterDataFeed.get(friend);
-            //System.out.println("Calling Score for:" + id + " friend:" + friend);
             int score = ScoringUtils.getWeightedScore(allMasterDataFeed.get(id), friendData, allAttributes);
             if( score > 0 ) {
                 Suggestion suggestion = new Suggestion(friend, score, friendData.getFullName());

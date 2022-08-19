@@ -7,7 +7,7 @@ import java.util.List;
 public class MasterDataFeedDaoImpl implements MasterDataFeedDao {
 
     @Override
-    public List<String[]> getAllMasterDataFeed(final Path path) throws IOException {
+    public List<String[]> getMasterDataFeed(final Path path) throws IOException {
         return DaoUtils.getData(path);
     }
 }

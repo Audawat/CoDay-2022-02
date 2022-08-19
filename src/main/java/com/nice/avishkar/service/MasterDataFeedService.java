@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface MasterDataFeedService {
-    Map<String, MasterDataFeed> getAllMasterDataFeed(List<String> userIds, Path path) throws IOException;
+    Map<String, MasterDataFeed> getMasterDataFeedForUsers(List<String> userIds, Path path) throws IOException;
 }

@@ -38,7 +38,7 @@ public class CareConnectTests {
     @Test
     public void test1() {
     	CareConnect careConnect = new CareConnectImpl();
-    	List<Suggestion> result = careConnect.getSuggestions("NCE00004", 2, 3, attributeInfoFilePath, connectionsFilePath, personInfoFilePath);
+    	List<Suggestion> result = careConnect.getSuggestions("NCE00004", 4, 3, attributeInfoFilePath, connectionsFilePath, personInfoFilePath);
 		Assert.assertTrue(result.get(0).getId().equals("NCE00001"));
 		Assert.assertTrue(result.size() == 1);
     }
@@ -54,7 +54,7 @@ public class CareConnectTests {
     @Test
     public void test3() {
     	CareConnect careConnect = new CareConnectImpl();
-    	List<Suggestion> result = careConnect.getSuggestions("NCE00006", 2, 3, attributeInfoFilePath, connectionsFilePath, personInfoFilePath);
+    	List<Suggestion> result = careConnect.getSuggestions("NCE00006", 4, 3, attributeInfoFilePath, connectionsFilePath, personInfoFilePath);
     	Assert.assertTrue(result.size() == 0);
     }
     

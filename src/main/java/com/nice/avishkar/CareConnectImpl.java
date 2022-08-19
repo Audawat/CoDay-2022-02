@@ -1,14 +1,10 @@
 package com.nice.avishkar;
 
-import com.nice.avishkar.dao.AttributeInfoDao;
-import com.nice.avishkar.dao.AttributeInfoDaoImpl;
 import com.nice.avishkar.dao.ExistingConnectionsDao;
 import com.nice.avishkar.dao.ExistingConnectionsDaoImpl;
 import com.nice.avishkar.dao.MasterDataFeedDao;
 import com.nice.avishkar.dao.MasterDataFeedDaoImpl;
 import com.nice.avishkar.entities.MasterDataFeed;
-import com.nice.avishkar.service.AttributeInfoService;
-import com.nice.avishkar.service.AttributeInfoServiceImpl;
 import com.nice.avishkar.service.ExistingConnectionsService;
 import com.nice.avishkar.service.ExistingConnectionsServiceImpl;
 import com.nice.avishkar.service.FriendsSuggestionService;
@@ -26,23 +22,18 @@ import java.util.Set;
 
 public class CareConnectImpl implements CareConnect {
 
-    AttributeInfoDao attributeInfoDao;
     ExistingConnectionsDao existingConnectionsDao;
     MasterDataFeedDao masterDataFeedDao;
-
-    AttributeInfoService attributeInfoService;
     ExistingConnectionsService existingConnectionsService;
     MasterDataFeedService masterDataFeedService;
     FriendsSuggestionService friendsSuggestionService;
 
     public CareConnectImpl() {
         //Creating Dao's
-        attributeInfoDao = new AttributeInfoDaoImpl();
         existingConnectionsDao = new ExistingConnectionsDaoImpl();
         masterDataFeedDao = new MasterDataFeedDaoImpl();
 
         //Creating all required Services
-        attributeInfoService = new AttributeInfoServiceImpl(attributeInfoDao);
         existingConnectionsService = new ExistingConnectionsServiceImpl(existingConnectionsDao);
         masterDataFeedService = new MasterDataFeedServiceImpl(masterDataFeedDao);
         friendsSuggestionService = new FriendsSuggestionServiceImpl();
@@ -59,16 +50,13 @@ public class CareConnectImpl implements CareConnect {
         List<Suggestion> suggestions = new ArrayList<>();
 
         try {
-            //Getting Attributes
-            Map<String, Integer> allAttributes = attributeInfoService.getAllAttributes(attributeInfoFilePath);
-
             //Getting possible friends set
-            Set<String> possibleFriends = existingConnectionsService.getPossibleFriendsSuggestion(id,
-                                                                                                  maxConnectionDegree,
-                                                                                                  existingConnectionsFilePath);
+            Set<String> possibleFriends = existingConnectionsService.getPossibleFriends(id,
+                                                                                        maxConnectionDegree,
+                                                                                        existingConnectionsFilePath);
 
             //Get master data for possible friends
-            Map<String, MasterDataFeed> allMasterDataFeed = getStringMasterDataFeedMapForPossibleFriends(id,
+            Map<String, MasterDataFeed> masterDataFeedForPossibleFriends = getStringMasterDataFeedMapForPossibleFriends(id,
                                                                                                          masterDataFeedFilePath,
                                                                                                          masterDataFeedService,
                                                                                                          possibleFriends);
@@ -77,8 +65,8 @@ public class CareConnectImpl implements CareConnect {
             suggestions = friendsSuggestionService.getFriendsSuggestions(id,
                                                                          maxSuggestions,
                                                                          possibleFriends,
-                                                                         allAttributes,
-                                                                         allMasterDataFeed);
+                                                                         attributeInfoFilePath,
+                                                                         masterDataFeedForPossibleFriends);
         } catch(IOException e) {
             String errorMessage = MessageFormat.format("Exception Occurred during Processing input file. Message: {0}",
                                                        e.getMessage());

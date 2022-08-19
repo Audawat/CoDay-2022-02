@@ -18,6 +18,7 @@ import com.nice.avishkar.service.MasterDataFeedServiceImpl;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,6 @@ public class CareConnectImpl implements CareConnect {
     MasterDataFeedService masterDataFeedService;
     FriendsSuggestionService friendsSuggestionService;
 
-
     public CareConnectImpl() {
         //Creating Dao's
         attributeInfoDao = new AttributeInfoDaoImpl();
@@ -47,7 +47,6 @@ public class CareConnectImpl implements CareConnect {
         masterDataFeedService = new MasterDataFeedServiceImpl(masterDataFeedDao);
         friendsSuggestionService = new FriendsSuggestionServiceImpl();
     }
-
 
     @Override
     public List<Suggestion> getSuggestions(String id,
@@ -75,8 +74,15 @@ public class CareConnectImpl implements CareConnect {
                                                                                                          possibleFriends);
 
             //populating suggested friends
-            suggestions = friendsSuggestionService.getFriendsSuggestions(id, maxSuggestions, possibleFriends, allAttributes, allMasterDataFeed);
+            suggestions = friendsSuggestionService.getFriendsSuggestions(id,
+                                                                         maxSuggestions,
+                                                                         possibleFriends,
+                                                                         allAttributes,
+                                                                         allMasterDataFeed);
         } catch(IOException e) {
+            String errorMessage = MessageFormat.format("Exception Occurred during Processing input file. Message: {0}",
+                                                       e.getMessage());
+            System.err.println(errorMessage);
             e.printStackTrace();
         }
 
@@ -87,7 +93,7 @@ public class CareConnectImpl implements CareConnect {
                                                                                      final Path masterDataFeedFilePath,
                                                                                      final MasterDataFeedService masterDataFeedService,
                                                                                      final Set<String> possibleFriends)
-                                                                                     throws IOException {
+            throws IOException {
         List<String> userDataToGet = new ArrayList<>(possibleFriends);
         userDataToGet.add(id);
         return masterDataFeedService.getAllMasterDataFeed(userDataToGet, masterDataFeedFilePath);

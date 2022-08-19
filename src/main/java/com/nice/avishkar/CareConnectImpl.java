@@ -54,19 +54,20 @@ public class CareConnectImpl implements CareConnect {
             Set<String> possibleFriends = existingConnectionsService.getPossibleFriends(id,
                                                                                         maxConnectionDegree,
                                                                                         existingConnectionsFilePath);
+            if( null != possibleFriends && possibleFriends.size() > 0 ) {
+                //Get master data for possible friends
+                Map<String, MasterDataFeed> masterDataFeedForPossibleFriends = getStringMasterDataFeedForPossibleFriends(id,
+                                                                                                                         masterDataFeedFilePath,
+                                                                                                                         masterDataFeedService,
+                                                                                                                         possibleFriends);
 
-            //Get master data for possible friends
-            Map<String, MasterDataFeed> masterDataFeedForPossibleFriends = getStringMasterDataFeedMapForPossibleFriends(id,
-                                                                                                         masterDataFeedFilePath,
-                                                                                                         masterDataFeedService,
-                                                                                                         possibleFriends);
-
-            //populating suggested friends
-            suggestions = friendsSuggestionService.getFriendsSuggestions(id,
-                                                                         maxSuggestions,
-                                                                         possibleFriends,
-                                                                         attributeInfoFilePath,
-                                                                         masterDataFeedForPossibleFriends);
+                //populating suggested friends
+                suggestions = friendsSuggestionService.getFriendsSuggestions(id,
+                                                                             maxSuggestions,
+                                                                             possibleFriends,
+                                                                             attributeInfoFilePath,
+                                                                             masterDataFeedForPossibleFriends);
+            }
         } catch(IOException e) {
             String errorMessage = MessageFormat.format("Exception Occurred during Processing input file. Message: {0}",
                                                        e.getMessage());
@@ -77,13 +78,13 @@ public class CareConnectImpl implements CareConnect {
         return suggestions;
     }
 
-    private Map<String, MasterDataFeed> getStringMasterDataFeedMapForPossibleFriends(final String id,
-                                                                                     final Path masterDataFeedFilePath,
-                                                                                     final MasterDataFeedService masterDataFeedService,
-                                                                                     final Set<String> possibleFriends)
+    private Map<String, MasterDataFeed> getStringMasterDataFeedForPossibleFriends(final String id,
+                                                                                  final Path masterDataFeedFilePath,
+                                                                                  final MasterDataFeedService masterDataFeedService,
+                                                                                  final Set<String> possibleFriends)
             throws IOException {
         List<String> userDataToGet = new ArrayList<>(possibleFriends);
         userDataToGet.add(id);
-        return masterDataFeedService.getAllMasterDataFeed(userDataToGet, masterDataFeedFilePath);
+        return masterDataFeedService.getMasterDataFeedForUsers(userDataToGet, masterDataFeedFilePath);
     }
 }

@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class MasterDataFeedServiceImpl implements MasterDataFeedService {
 
+    public static final String VALUE_SEPARATOR = "\\|";
     private MasterDataFeedDao masterDataFeedDao;
 
     public MasterDataFeedServiceImpl(final MasterDataFeedDao masterDataFeedDao) {
@@ -19,20 +20,18 @@ public class MasterDataFeedServiceImpl implements MasterDataFeedService {
     }
 
     @Override
-    public Map<String, MasterDataFeed> getAllMasterDataFeed(List<String> userIds, final Path path) throws IOException {
-        List<String[]> allMasterDataFeed = masterDataFeedDao.getAllMasterDataFeed(path);
+    public Map<String, MasterDataFeed> getMasterDataFeedForUsers(List<String> userIds, final Path masterDataFilePath) throws IOException {
+        List<String[]> allMasterDataFeed = masterDataFeedDao.getMasterDataFeed(masterDataFilePath);
         Map<String, MasterDataFeed> masterData = new HashMap<>();
         if( null != allMasterDataFeed ) {
             allMasterDataFeed.stream().forEach(p -> {
-                //System.out.println("Getting Data for: " + p[0]);
                 if(userIds.contains(p[0])) {
                     MasterDataFeed masterDataFeed = getMasterDataFeed(p);
-                    //System.out.println("Got master data:" + masterDataFeed);
                     masterData.put(masterDataFeed.getId(), masterDataFeed);
                 }
             });
         } else {
-            System.out.println("No Master data found");
+            System.err.println("No Master data found");
         }
 
         return masterData;
@@ -53,7 +52,7 @@ public class MasterDataFeedServiceImpl implements MasterDataFeedService {
 
     List<String> getEntities(String value) {
         if( null != value ) {
-            String[] values = value.split("\\|");
+            String[] values = value.split(VALUE_SEPARATOR);
             return Arrays.asList(values);
         }
 

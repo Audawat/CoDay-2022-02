@@ -4,12 +4,12 @@ import com.nice.avishkar.dao.ExistingConnectionsDao;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ExistingConnectionsServiceImpl implements ExistingConnectionsService {
 
@@ -21,7 +21,16 @@ public class ExistingConnectionsServiceImpl implements ExistingConnectionsServic
     }
 
     @Override
-    public Map<String, Set<String>> getConnectionsMap(final Path existingConnectionsFilePath) throws IOException {
+    public Set<String> getPossibleFriends(final String id,
+                                          final int maxConnectionDegree,
+                                          final Path existingConnectionsFilePath) throws IOException {
+
+        Map<String, Set<String>> existingConnections = getConnectionsMap(existingConnectionsFilePath);
+        return getPossibleFriendsFromExistingConnections(id, maxConnectionDegree, existingConnections);
+    }
+
+    //Getting All Connections per User
+    private Map<String, Set<String>> getConnectionsMap(final Path existingConnectionsFilePath) throws IOException {
         List<String[]> allExistingConnections = existingConnectionsDao.getAllExistingConnections(existingConnectionsFilePath);
         allExistingConnections.stream().forEach(p -> {
             String node1 = p[0];
@@ -44,35 +53,32 @@ public class ExistingConnectionsServiceImpl implements ExistingConnectionsServic
         }
     }
 
-    private List<String> getFriendsOfFriends(final Set<String> friends,
-                                             final Map<String, Set<String>> connectionsMap) {
+    //Get Immediate friends of provided users
+    private List<String> getFriendsOfUsers(final Set<String> userIds,
+                                           final Map<String, Set<String>> connectionsMap) {
         Set<String> friendsOfFriends = new HashSet<>();
-        friends.forEach(friend -> {
-            friendsOfFriends.addAll(connectionsMap.get(friend));
+        userIds.forEach(user -> {
+            friendsOfFriends.addAll(connectionsMap.get(user));
         });
 
-        return friendsOfFriends.stream().collect(Collectors.toList());
+        return new ArrayList<>(friendsOfFriends);
     }
 
-    @Override
-    public Set<String> getPossibleFriends(final String id,
-                                          final int maxConnectionDegree,
-                                          final Path existingConnectionsFilePath) throws IOException {
-
-        Map<String, Set<String>> existingConnections = getConnectionsMap(existingConnectionsFilePath);
-        return getFriendSuggestionFromExistingConnections(id, maxConnectionDegree, existingConnections);
-    }
-
-    private Set<String> getFriendSuggestionFromExistingConnections(final String id,
-                                                                   final int maxConnectionDegree,
-                                                                   final Map<String, Set<String>> existingConnections) {
-        Set<String> existingFriends = existingConnections.get(id);
-        Set<String> possibleFriends = new HashSet<>(existingFriends);
-        for( int level = 1; level < maxConnectionDegree; level++ ) {
-            possibleFriends.addAll(getFriendsOfFriends(possibleFriends, existingConnections));
+    private Set<String> getPossibleFriendsFromExistingConnections(final String userId,
+                                                                  final int maxConnectionDegree,
+                                                                  final Map<String, Set<String>> existingConnections) {
+        Set<String> existingFriends = existingConnections.get(userId);
+        Set<String> possibleFriends = null;
+        if( null != existingFriends ) {
+            possibleFriends = new HashSet<>(existingFriends);
+            //Fetch friends as per maxConnectionDegree
+            for( int level = 1; level < maxConnectionDegree; level++ ) {
+                possibleFriends.addAll(getFriendsOfUsers(possibleFriends, existingConnections));
+            }
+            //Removing Direct connections and self
+            possibleFriends.removeAll(existingFriends);
+            possibleFriends.remove(userId);
         }
-        possibleFriends.removeAll(existingFriends);
-        possibleFriends.remove(id);
         return possibleFriends;
     }
 }

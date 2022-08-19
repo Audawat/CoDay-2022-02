@@ -5,5 +5,5 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface MasterDataFeedDao {
-    List<String[]> getAllMasterDataFeed(Path path) throws IOException;
+    List<String[]> getMasterDataFeed(Path path) throws IOException;
 }

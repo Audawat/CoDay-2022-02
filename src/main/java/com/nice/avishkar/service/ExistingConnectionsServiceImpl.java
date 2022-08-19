@@ -55,9 +55,9 @@ public class ExistingConnectionsServiceImpl implements ExistingConnectionsServic
     }
 
     @Override
-    public Set<String> getPossibleFriendsSuggestion(final String id,
-                                                    final int maxConnectionDegree,
-                                                    final Path existingConnectionsFilePath) throws IOException {
+    public Set<String> getPossibleFriends(final String id,
+                                          final int maxConnectionDegree,
+                                          final Path existingConnectionsFilePath) throws IOException {
 
         Map<String, Set<String>> existingConnections = getConnectionsMap(existingConnectionsFilePath);
         return getFriendSuggestionFromExistingConnections(id, maxConnectionDegree, existingConnections);
